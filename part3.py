@@ -4,12 +4,12 @@ import matplotlib.pyplot as plt
 from scipy import stats
 
 def analyze_part3():
-    df_meta = pd.read_csv('cell-count.csv')[
+    df_meta = pd.read_csv('data/cell-count.csv')[
         ['sample', 'condition', 'treatment', 'sample_type', 'response']
     ].drop_duplicates()
     
     # load relative frequencies from Part 2
-    df_summary = pd.read_csv('part2_summary.csv')
+    df_summary = pd.read_csv('data/part2_summary.csv')
     
     # merge data with frequencies
     df_merged = pd.merge(df_summary, df_meta, on='sample', how='inner')
@@ -43,7 +43,7 @@ def analyze_part3():
     plt.xlabel('Cell Population')
     
     plt.tight_layout()
-    plot_filename = 'part3_boxplot.png'
+    plot_filename = 'figures/part3_boxplot.png'
     plt.savefig(plot_filename)
     print(f"Boxplot saved successfully to {plot_filename}")
     
@@ -84,7 +84,7 @@ def analyze_part3():
     print(res_df.to_string(index=False))
     
     # save statistical results for Mr. D'yada
-    stats_filename = 'part3_stats.csv'
+    stats_filename = 'data/part3_stats.csv'
     res_df.to_csv(stats_filename, index=False)
     print(f"\nResults saved to {stats_filename}")
 

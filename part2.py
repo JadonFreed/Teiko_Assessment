@@ -35,12 +35,12 @@ def calculate_relative_frequencies(csv_path):
 
 if __name__ == "__main__":
     # Execute the function
-    summary_table = calculate_relative_frequencies('cell-count.csv')
+    summary_table = calculate_relative_frequencies('data/cell-count.csv')
     
     # Display the first few rows to verify
     print(summary_table.head(10))
     
     # Save the output to a CSV file for future use (like in the dashboard)
-    output_file = 'part2_summary.csv'
+    output_file = 'data/part2_summary.csv'
     summary_table.to_csv(output_file, index=False)
     print(f"\nSummary table successfully saved to {output_file}")
