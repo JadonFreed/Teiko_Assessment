@@ -10,9 +10,9 @@ app = dash.Dash(__name__)
 # load and prepare data for the dashboard
 def load_data():
     
-    df_meta = pd.read_csv('cell-count.csv')[['sample', 'condition', 'treatment', 'sample_type', 'response']].drop_duplicates()
+    df_meta = pd.read_csv('data/cell-count.csv')[['sample', 'condition', 'treatment', 'sample_type', 'response']].drop_duplicates()
     
-    df_summary = pd.read_csv('part2_summary.csv')
+    df_summary = pd.read_csv('data/part2_summary.csv')
     
     return pd.merge(df_summary, df_meta, on='sample', how='inner')
 
@@ -22,7 +22,7 @@ df_all = load_data()
 def get_bobs_insights():
     """Dynamically queries the SQLite DB for Bob's insights (currently set to the base cohort)."""
     import sqlite3
-    conn = sqlite3.connect('clinical_trial.db')
+    conn = sqlite3.connect('data/clinical_trial.db')
     
     # base cohort definition: Melanoma, Miraclib, PBMC, time=0
     base_query = """

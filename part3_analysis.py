@@ -8,8 +8,8 @@ def check_distributions():
     # I loaded from csv for simplicity, but we could also query the SQLite database directly
     ## since it is a baseline distribution check this will suffice for initial analysis.
     df = pd.merge(
-        pd.read_csv('part2_summary.csv'),
-        pd.read_csv('cell-count.csv')[['sample', 'condition', 'treatment', 'response', 'sample_type']],
+        pd.read_csv('data/part2_summary.csv'),
+        pd.read_csv('data/cell-count.csv')[['sample', 'condition', 'treatment', 'response', 'sample_type']],
         on='sample'
     )
     
@@ -51,7 +51,7 @@ def check_distributions():
             print(f"{pop:12} - Levene Test: Insufficient data for groups")
 
     plt.tight_layout()
-    plt.savefig('distribution_check.png')
+    plt.savefig('figures/distribution_check.png')
     print("Distribution plots saved as distribution_check.png")
     
     # SUMMARY STATISTICS FOR CELL POPULATIONS BETWEEN RESPOINDERS AND NON-RESPONDERS
@@ -74,7 +74,7 @@ def check_distributions():
     ))
 
 
-    means.to_csv('clinical_summary_stats.csv')
+    means.to_csv('data/clinical_summary_stats.csv')
 
 if __name__ == "__main__":
     check_distributions()

@@ -26,7 +26,7 @@ It was split into three different tables:
     - Stores lab results in long format to allow for multiple cell types without creating a significant number of columns
 
 
-![Database Schema](Bobs_Database_Schema.pdf)
+![Database Schema](figures/Bobs_Database_Schema.pdf)
 
 
 * Flat files lead to data redundancy and update issues. By separating data into subjects, samples, and cell_counts, we ensure that patient demographics are stored exactly once.

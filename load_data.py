@@ -4,7 +4,7 @@ import os
 
 def create_database():
     db_path = 'clinical_trial.db'
-    csv_path = 'cell-count.csv'
+    csv_path = 'data/cell-count.csv'
 
     # initialize the database connection
     conn = sqlite3.connect(db_path)
@@ -21,7 +21,7 @@ def create_database():
     
 
     # Table 1: subjects
-    ## table schema: subject_id (PK), project_id, condition, age, sex, treatment, response 
+    ## table schema: subject_id (KEY), project_id, condition, age, sex, treatment, response 
     cursor.execute('''
         CREATE TABLE subjects (
             subject_id TEXT PRIMARY KEY,
@@ -35,7 +35,7 @@ def create_database():
     ''')
 
     # Table 2: samples
-    ## table schema: sample_id (PK), subject_id (FK), sample_type, time_from_treatment_start
+    ## table schema: sample_id (KEY), subject_id (SECONDARY KEY), sample_type, time_from_treatment_start
     cursor.execute('''
         CREATE TABLE samples (
             sample_id TEXT PRIMARY KEY,
@@ -47,7 +47,7 @@ def create_database():
     ''')
 
     # Table 3: cell_counts (long format)
-    ## table schema: subject_id (PK), project_id, condition, age, sex, treatment, response
+    ## table schema: subject_id (KEY), project_id, condition, age, sex, treatment, response
     cursor.execute('''
         CREATE TABLE cell_counts (
             sample_id TEXT,
