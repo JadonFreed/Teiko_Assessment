@@ -6,7 +6,8 @@ setup:
 pipeline:
 	./venv/bin/python load_data.py
 	./venv/bin/python part2.py
-	./venv/bin/python part3.py
+	./venv/bin/python part3a_analysis.py
+	./venv/bin/python part3b_prediction.py
 	./venv/bin/python part4.py
 
 dashboard:

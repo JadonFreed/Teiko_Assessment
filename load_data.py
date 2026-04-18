@@ -3,6 +3,8 @@ import sqlite3
 import os
 
 def create_database():
+    
+    print("PART 1: LOAD DATA INTO SQLITE DATABASE")
     db_path = 'clinical_trial.db'
     csv_path = 'data/cell-count.csv'
 

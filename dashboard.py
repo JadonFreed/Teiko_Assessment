@@ -4,6 +4,8 @@ import plotly.express as px
 import pandas as pd
 import sqlite3
 
+
+print("\nLOADING DASHBOARD")
 # start dash app
 app = dash.Dash(__name__)
 
@@ -22,7 +24,7 @@ df_all = load_data()
 def get_bobs_insights():
     """Dynamically queries the SQLite DB for Bob's insights (currently set to the base cohort)."""
     import sqlite3
-    conn = sqlite3.connect('data/clinical_trial.db')
+    conn = sqlite3.connect('clinical_trial.db')
     
     # base cohort definition: Melanoma, Miraclib, PBMC, time=0
     base_query = """
@@ -39,15 +41,15 @@ def get_bobs_insights():
     # calculate stats based on Bob's questions
     # How many samples from each project
     proj_counts = df_base.groupby('project_id')['sample_id'].nunique().to_dict()
-    proj_str = ", ".join([f"{k} ({v})" for k, v in proj_counts.items()])
+    proj_str = " - ".join([f"{k} ({v})" for k, v in proj_counts.items()])
     
     # How many subjects were responders/non-responders
     resp_counts = df_base.groupby('response')['subject_id'].nunique().to_dict()
-    resp_str = f"Responders: {resp_counts.get('yes', 0)} | Non-responders: {resp_counts.get('no', 0)}"
+    resp_str = f"Responders: {resp_counts.get('yes', 0)} - Non-responders: {resp_counts.get('no', 0)}"
     
     # How many subjects were males/females
     sex_counts = df_base.groupby('sex')['subject_id'].nunique().to_dict()
-    sex_str = f"Males ({sex_counts.get('M', 0)}) | Females ({sex_counts.get('F', 0)})"
+    sex_str = f"Males ({sex_counts.get('M', 0)}) - Females ({sex_counts.get('F', 0)})"
     
     query_b_cells = """
         SELECT AVG(cc.cell_count) FROM cell_counts cc
@@ -67,6 +69,9 @@ def get_bobs_insights():
 
 # get the insights for the specific subset in part 4 to display on the dashboard
 proj_str, resp_str, sex_str, avg_b_cells_str = get_bobs_insights()
+
+
+
 
 # create the layout of the dashboard
 app.layout = html.Div(style={'fontFamily': 'Arial, sans-serif', 'padding': '20px'}, children=[

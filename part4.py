@@ -2,6 +2,7 @@ import sqlite3
 import pandas as pd
 
 def analyze_part4():
+    print("\nPART 4: DATA SUBSET ANALYSIS")
     db_path = 'clinical_trial.db'
     
     # Connect to the SQLite database
