@@ -11,7 +11,7 @@
 ## File Structure
 * `load_data.py`: ETL script to initialize the SQLite DB and normalize the CSV.
 * `part2.py`: Generates relative frequency tables and total cell counts.
-* `part3a_analysis.py`: Conducts distributional analysis and hypothesis testing (Mann-Whitney U, Welch's, and FDR correction).
+* `part3a_analysis.py`: Conducts distributional analysis and hypothesis testing (Mann-Whitney, Welch's, and FDR correction).
 * `part3b_prediction.py`: Executes predictive machine learning models (Logistic Regression vs. Tuned Random Forest).
 * `part4.py`: Performs complex SQL joins to extract specific cohort insights.
 * `dashboard.py`: A Plotly Dash application providing an interactive interface for the clinical team.
@@ -75,5 +75,4 @@ If this project were to scale to hundreds of projects and thousands of subjects,
 ### Database Partitioning
 I would partition by project_id if the scale drastically increased. This allows the system to ignore irrelevant project data during a query, significantly increasing speed as the dataset grows. 
 
-Transitioning the backend from SQLite to PostgreSQL to support concurrent write access and advanced indexing would help when data grows significantly. 
-
+Transitioning the backend from SQLite to PostgreSQL would support concurrent write access from multiple lab technicians and allow for advanced indexing strategies as the data grows significantly.
