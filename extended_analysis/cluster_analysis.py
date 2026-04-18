@@ -16,7 +16,7 @@ def identify_patient_subtypes():
         (df['sample_type'] == 'PBMC')
     ].dropna(subset=['response'])
     
-    # Pivot to Wide Format and merge response labels . reset the index 
+    # pivot to Wide Format and merge response labels . reset the index 
     df_wide = df_filtered.pivot(index='sample', columns='population', values='percentage').reset_index()
     df_wide = df_wide.merge(df_meta[['sample', 'response']], on='sample', how='inner')
     

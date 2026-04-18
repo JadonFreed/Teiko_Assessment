@@ -4,3 +4,4 @@ seaborn
 scipy
 dash
 Scikit-learn
+statsmodels

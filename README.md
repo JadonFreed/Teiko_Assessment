@@ -1,74 +1,79 @@
 # Clinical Trial Immune Profiling Pipeline
 ## Author: Bob's favorite analyst (Jadon Freed)
 
-## Quick Start
+## Startup Instructions
 
 1. **Environment Setup:** `make setup`
 2. **Data Pipeline:** `make pipeline`
 3. **Interactive Dashboard:** `make dashboard`
 
----
+
+## File Structure
+* `load_data.py`: ETL script to initialize the SQLite DB and normalize the CSV.
+* `part2.py`: Generates relative frequency tables and total cell counts.
+* `part3a_analysis.py`: Conducts distributional analysis and hypothesis testing (Mann-Whitney U, Welch's, and FDR correction).
+* `part3b_prediction.py`: Executes predictive machine learning models (Logistic Regression vs. Tuned Random Forest).
+* `part4.py`: Performs complex SQL joins to extract specific cohort insights.
+* `dashboard.py`: A Plotly Dash application providing an interactive interface for the clinical team.
+* `cluster_analysis.py`: K-means clustering for immune -profile type ** extended analysis
+* `PCA.py`: perform PCA and select 2 top PC components ** extended analysis
+* `Makefile`: Script for reproduction. 
+
+
+## Dashboard Access
+Once the server is running via `make dashboard`, access the interface at:
+**http://127.0.0.1:8050**
+
 
 ## Planning & Thought Process
 
-### 1. Relational Data Modeling
-My primary goal was to move away from the flat-file CSV structure to a paritioned schema using SQLite. 
+### Data Modeling and Schema
+My primary goal was to move away from the one-table CSV structure to a paritioned schema using SQLite. 
 
 It was split into three different tables:
-- Subject Info: subject_id (Key), project_id, condition, age, sex, treatment, response
+Table 1 -  Subject Info: subject_id (Key), project_id, condition, age, sex, treatment, response
     - This stores demographic and clinical info about each patient 
 
-- Sample Info: sample_id (Key), subject_id (Secondary Key), sample_type, time_from_treatment_start
+Table 2 - Sample Info: sample_id (Key), subject_id (Secondary Key), sample_type, time_from_treatment_start
     - Captures longitudinal events and allows for multiple samples from a single patient
     - Links to subject info and provides link for patient-specific lab results
 
-- Cell count Info: sample_id (Secondary Key), population (cell type), cell_count
+Table 3 - Cell count Info: sample_id (Secondary Key), population (cell type), cell_count
     - Stores lab results in long format to allow for multiple cell types without creating a significant number of columns
 
-
 ![Database Schema](figures/Bobs_Database_Schema.pdf)
-
 
 * Flat files lead to data redundancy and update issues. By separating data into subjects, samples, and cell_counts, we ensure that patient demographics are stored exactly once.
 * I chose to store cell counts in a long format (population (Cell type) and count columns) rather than wide columns to allow for the lab to track new cell types without the database structure changing.
 
-### 2. Statistical Methodology
-To address Bob's question regarding treatment response in Melanoma patients, I implemented the **Mann-Whitney U Test**.
+### Statistical Methodology
+To address Bob's question regarding treatment response in Melanoma patients, I conducted the following statistical analyses:
 
-* **Rationale:** Since we are dealing with relative frequencies (percentages), the data is bounded (0-100) and often non-normally distributed. The Mann-Whitney U test is a non-parametric approach that provides more statistical rigor than a standard T-test for high-variance biological datasets.
+#### Distribution Analysis and Hypothesis Testing
+- I first loaded in the data and did simple distributional analysis as well as creating some summary statistics on the groups that Bob wants to compare. 
+Distribution of cell types visuals and graphs:
+- Histograms: relatively normal with some slight skew
+- QQ-plots: b cells and nk cells seem to diverge from typical residual tail behavior (likely non-normal), monocytes and cd8 seem to follow normal.
+- Shapiro wilkes: all fail, but its known to be a very sensitive test.
+- levenes test for constant variance: all fail except cd4 cells. 
 
-### 3. Development Workflow
-I utilized AI to accelerate development:
-* **Boilerplate & ETL:** AI was used to generate initial Pandas `melt` logic and the CSS styling for the Dash components.
-* **Manual Refinement:** I manually refactored the AI's output to ensure the dashboard dynamically queries the SQLite backend via SQL `JOIN` operations, rather than relying on static data frames. This ensures the UI remains aan accurate reflection of the database, which controls for any updates to the database system.
-* **Verification:** I conducted manual spot-checks on the SQL aggregation results (e.g., average B-cell counts) against the raw CSV to verify the mathematical integrity of the automated scripts.
 
----
+This suggests using either a non-parametric test or parametric test (given unequal variances)
+- Non-parametric test: Mann-whitney test - allows rank based testing (robust to outliers)
+- parametric: Welch's T -test (t test for unequal variances): motivated by large sample size and CLT giving normality
+- We control for multiple testing via the Benjamini-hochberg procedure to control for FDR
+ 
+
+### Predictive Modeling 
+To utilize this data for predictive purposes (determining treatment response):
+- Logistic regression base model.
+- Random Forest hyperparameters selected via a grid search with cross validation.
 
 ## Pipeline Scalability
 If this project were to scale to hundreds of projects and thousands of subjects, I would implement the following:
 
 ### Database Partitioning
-I would partition by project_id if the scale drastically increased. This allows the system to ignore irrelevant project data during a query, significantly increasing speed as the dataset grows.
+I would partition by project_id if the scale drastically increased. This allows the system to ignore irrelevant project data during a query, significantly increasing speed as the dataset grows. 
 
-### Migration to Enterprise SQL
-For a production environment, I would migrate from SQLite to **PostgreSQL**. This would allow for:
-* Concurrent write access from multiple lab technicians.
-* Advanced indexing strategies on `subject_id` and `sample_id`.
-* Integration with professional ORMs like SQLAlchemy for more robust code maintenance.
+Transitioning the backend from SQLite to PostgreSQL to support concurrent write access and advanced indexing would help when data grows significantly. 
 
----
-
-## File Structure
-* `load_data.py`: ETL script to initialize the SQLite DB and normalize the CSV.
-* `part2.py`: Generates relative frequency tables and total cell counts.
-* `part3.py`: Conducts Mann-Whitney U testing and generates baseline boxplots.
-* `part4.py`: Performs complex SQL joins to extract specific cohort insights.
-* `dashboard.py`: A Plotly Dash application providing an interactive interface for the clinical team.
-* `Makefile`: Orchestration script for grading and reproduction.
-
----
-
-## Dashboard Access
-Once the server is running via `make dashboard`, access the interface at:
-**http://127.0.0.1:8050**

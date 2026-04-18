@@ -1,6 +1,8 @@
 import pandas as pd
 
 def calculate_relative_frequencies(csv_path):
+    
+    print("\nPART 2: CALCULATE RELATIVE FREQUENCIES OF IMMUNE CELL POPULATIONS")
     # Load the data
     df = pd.read_csv(csv_path)
     

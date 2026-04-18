@@ -3,6 +3,7 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 import scipy.stats as stats
 from scipy.stats import levene
+from statsmodels.stats.multitest import multipletests
 
 def analysis_testing():
     print("\n Part 3a: Exploratory Data Analysis and Statistical Testing")
@@ -130,7 +131,7 @@ def analysis_testing():
         ## we will use Welch's t test to account for unequal variances. 
         _, p_welch = stats.ttest_ind(res_y, res_n, equal_var=False)
         
-        # Mann-Whitney U Test (Non-parametric)
+        # Mann-Whitney Test (Non-parametric)
         ## gives robust estimate by ranking, which should account for possible outliers and non-normality in the data.
         _, p_mw = stats.mannwhitneyu(res_y, res_n)
 
@@ -145,7 +146,23 @@ def analysis_testing():
         
     res_df = pd.DataFrame(results)
     
-    print("\n Statistical Test Results (Welch's T-test and Mann-Whitney U) ")
+    # MULTIPLE COMPARISON CORRECTION
+    # apply Benjamini-Hochberg FDR correction to both sets of p-values
+    _, mw_q_values, _, _ = multipletests(res_df['mw_p_value'], alpha=0.05, method='fdr_bh')
+    _, welch_q_values, _, _ = multipletests(res_df['welch_p_value'], alpha=0.05, method='fdr_bh')
+    
+    # add FWER adjusted p-values (q-values) to the DataFrame
+    res_df['mw_q_value'] = mw_q_values
+    res_df['welch_q_value'] = welch_q_values
+    res_df['significant_mw_fdr'] = mw_q_values < 0.05
+    
+    # reorder columns for clean display
+    res_df = res_df[['population', 'mw_p_value', 'mw_q_value', 'significant_mw_fdr', 'welch_p_value', 'welch_q_value']]
+    
+    print("\n Statistical Test Results (Unadjusted vs. FDR-Adjusted)")
+    print(res_df.to_string(index=False))
+    
+    print("\n Statistical Test Results (Welch's T-test and Mann-Whitney) ")
     print(res_df.to_string(index=False))
     
     # save statistical results for Mr. D'yada
